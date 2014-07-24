@@ -1,5 +1,5 @@
 {
-  "name": "nodeprime-etcd",
+  "name": "node-etcd",
   "version": "0.0.0",
   "description": "",
   "main": "./lib",
