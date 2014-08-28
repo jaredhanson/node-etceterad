@@ -9,6 +9,7 @@
   "author": "David Lee Mather Jr.",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.37.0"
+    "request": "^2.37.0",
+    "debug": "~1.0.4"
   }
 }
