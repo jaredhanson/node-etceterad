@@ -613,6 +613,36 @@ describe('lib/client', function () {
     it('should be a function', function () {
       expect(clientInstance.setTTL).to.be.a('function');
     });
+
+    describe('correctly setting TTL', function () {
+      var request = {};
+      var result = {};
+      var opts;
+      result.form = function (options) {
+        opts = options;
+      }
+      request.put = function(url, cb) {
+        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
+        process.nextTick(function() {
+          return cb(null, {}, '{}');
+        });
+        return result;
+      };
+
+      before(function (done) {
+        var client = $require(clientPath, {'request': request});
+        var myClient = new client();
+        myClient.setTTL('/welcome/to/the/party', 'weew', 100, function (err) {
+          if (err) { return done(err); }
+          return done();
+        });
+      });
+
+      it('should set the value', function () {
+        expect(opts.value).to.equal('weew');
+        expect(opts.ttl).to.equal(100);
+      });
+    });
   });
 
   describe('#updateTTL', function () {
@@ -620,6 +650,77 @@ describe('lib/client', function () {
     it('should be a function', function () {
       expect(clientInstance.updateTTL).to.be.a('function');
     });
+
+    describe('correctly updating TTL', function () {
+      var request = {};
+      var result = {};
+      var opts;
+      result.form = function (options) {
+        opts = options;
+      }
+      request.put = function(url, cb) {
+        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party?prevExist=true');
+        process.nextTick(function() {
+          return cb(null, {}, '{}');
+        });
+        return result;
+      };
+
+      before(function (done) {
+        var client = $require(clientPath, {'request': request});
+        var myClient = new client();
+        myClient.updateTTL('/welcome/to/the/party', 'weew', 100, function (err) {
+          if (err) { return done(err); }
+          return done();
+        });
+      });
+
+      it('should set the value', function () {
+        expect(opts.value).to.equal('weew');
+        expect(opts.ttl).to.equal(100);
+      });     
+    });
   });
 
+  describe('#watch', function () {
+    var clientInstance = new Client();
+    it('should be a function', function () {
+      expect(clientInstance.watch).to.be.a('function');
+    });
+
+    describe('watching for change', function () {
+      var result = {};
+      var opts;
+      result.form = function (options) {
+        opts = options;
+      }
+      var request = function(url, cb) {
+        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party?wait=true');
+        process.nextTick(function() {
+          return cb(null, {}, '{"action":"boogie dancing", "node": {"key": "wow", "value": "niceone", "modifiedIndex": 100}}');
+        });
+        return result;
+      };
+      var act, k, val, sts;
+      before(function (done) {
+        var client = $require(clientPath, {'request': request});
+        var myClient = new client();
+        myClient.watch('/welcome/to/the/party', function (err, action, key, value, stats) {
+          if (err) { return done(err); }
+          act = action;
+          k = key;
+          val = value;
+          sts = stats;
+          return done();
+        });
+      });
+
+      it('should return some info', function () {
+        expect(act).to.be.equal('boogie dancing');
+        expect(k).to.be.equal('wow');
+        expect(val).to.be.equal('niceone');
+        expect(sts.mindex).to.be.equal(100);
+      });
+    });
+  });
 });
