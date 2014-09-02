@@ -9,8 +9,11 @@
   "author": "David Lee Mather Jr.",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.37.0",
+    "chai": "^1.9.1",
     "debug": "~1.0.4",
-    "moment": "~2.8.2"
+    "mocha": "^1.21.4",
+    "moment": "~2.8.2",
+    "proxyquire": "^1.0.1",
+    "request": "^2.37.0"
   }
 }
