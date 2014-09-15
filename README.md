@@ -1,6 +1,6 @@
 #nodeprime-etcd
 
-![](http://i30.photobucket.com/albums/c343/Zeefer/chinesefoodpizza2.jpg)
+
 
 ##nodeprime's library for etcd access
 
