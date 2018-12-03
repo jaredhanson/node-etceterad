@@ -1,6 +1,7 @@
 var CLIENT_PATH = '../../lib/client';
 
-var Client = require('../lib/client')
+var sinon = require('sinon')
+  , Client = require('../lib/client')
   , clientPath = '../../lib/client';
   
 describe('Client', function () {
@@ -16,6 +17,45 @@ describe('Client', function () {
       expect(client.getPath).to.be.a('function');
     });
     
+    it('should do something', function(done) {
+      var client = new Client();
+      expect(1).to.equal(1);
+      
+      var request = sinon.stub().yields(null, {}, JSON.parse('{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}'));
+      
+      /*
+      var request = function(options, cb) {
+        //expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
+        process.nextTick(function() {
+          return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
+        });
+      };
+      */
+      
+      var client = $require(clientPath, {'request': request});
+      var myClient = new client();
+      myClient.getPath('/welcome/to/the/party', function (err, res) {
+        if (err) { return done(err); }
+        response = res;
+        
+        
+        expect(request).to.have.been.calledOnce;
+        expect(request).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/welcome/to/the/party',
+          json: true,
+          pool: { maxSockets: 9999 }
+        });
+        
+        expect(response[0]).to.be.equal('wow');
+        
+        return done();
+      });
+      
+      
+      //done();
+    });
+    
+    /*
     describe('correctly getting path', function () {
       var result = {};
       var opts;
@@ -23,8 +63,8 @@ describe('Client', function () {
         opts = options;
       };
 
-      var request = function(url, cb) {
-        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
+      var request = function(options, cb) {
+        //expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
         process.nextTick(function() {
           return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
         });
@@ -50,6 +90,7 @@ describe('Client', function () {
         expect(response[0]).to.be.equal('wow');
       });
     });
+    */
     
   });
   
