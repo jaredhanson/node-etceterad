@@ -1,6 +1,6 @@
 var CLIENT_PATH = '../../lib/client';
 
-var Client = require('../../../lib/client')
+var Client = require('../lib/client')
   , clientPath = '../../lib/client';
   
 describe('Client', function () {
