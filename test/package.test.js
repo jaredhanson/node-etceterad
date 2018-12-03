@@ -1,13 +1,13 @@
 /* global describe, it */
 
-var pkg = require('..');
-var expect = require('chai').expect;
+var etceterad = require('..');
+var Client = require('../lib/client');
 
 
 describe('etceterad', function() {
   
-  it('should export hello world', function() {
-    //expect(pkg.hello).to.equal('world');
+  it('should export Client', function() {
+    expect(etceterad).to.equal(Client);
   });
   
 });

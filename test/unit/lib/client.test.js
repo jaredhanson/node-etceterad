@@ -1,9 +1,58 @@
+var CLIENT_PATH = '../../lib/client';
+
 var Client = require('../../../lib/client')
   , clientPath = '../../lib/client';
-describe('lib/client', function () {
-  it('should export a function', function () {
+  
+describe('Client', function () {
+  
+  it('should export a constructor', function () {
     expect(Client).to.be.a('function');
   });
+  
+  describe('#getPath', function () {
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.getPath).to.be.a('function');
+    });
+    
+    describe('correctly getting path', function () {
+      var result = {};
+      var opts;
+      result.form = function (options) {
+        opts = options;
+      };
+
+      var request = function(url, cb) {
+        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
+        process.nextTick(function() {
+          return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
+        });
+        return result;
+      };
+
+      var response;
+      before(function (done) {
+        var client = $require(clientPath, {'request': request});
+        var myClient = new client();
+        myClient.getPath('/welcome/to/the/party', function (err, res) {
+          if (err) { return done(err); }
+          response = res;
+          return done();
+        });
+      });
+
+      it('should not receive options', function () {
+        expect(opts).to.be.undefined;
+      });
+
+      it('should return path', function () {
+        expect(response[0]).to.be.equal('wow');
+      });
+    });
+    
+  });
+  
 
   /*
   describe('#setPath', function () {
