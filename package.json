@@ -2,12 +2,24 @@
   "name": "etceterad",
   "version": "0.0.0",
   "description": "",
-  "main": "./lib",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": {
+    "name": "Jared Hanson",
+    "email": "jaredhanson@gmail.com",
+    "url": "http://www.jaredhanson.net/"
   },
-  "author": "David Lee Mather Jr.",
-  "license": "ISC",
+  "contributors": [
+    {
+      "name": "David Lee Mather Jr."
+    }
+  ],
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "main": "./lib",
   "dependencies": {
     "chai": "^1.9.1",
     "debug": "~1.0.4",
@@ -15,5 +27,11 @@
     "moment": "~2.8.2",
     "proxyquire": "^1.0.1",
     "request": "^2.37.0"
+  },
+  "devDependencies": {
+    "make-node": "^0.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
