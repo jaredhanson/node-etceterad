@@ -11,6 +11,55 @@ describe('Client', function () {
     expect(Client).to.be.a('function');
   });
   
+  describe('#set', function () {
+    var request = {
+      put: function(){}
+    };
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.setValue).to.be.a('function');
+    });
+    
+    it('should set value', function(done) {
+      var form = sinon.spy();
+      sinon.stub(request, 'put').callsFake(function(options, cb) {
+        process.nextTick(function() {
+          return cb(null, {}, JSON.stringify({
+            action: 'set',
+            node: {
+              key: '/message',
+              value: 'Hello world',
+              modifiedIndex: 2,
+              createdIndex: 2
+            }
+          }));
+        });
+        
+        return { form: form };
+      });
+      
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.setValue('/message', 'Hello world', function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request.put).to.have.been.calledOnce;
+        expect(request.put).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/message',
+          pool: { maxSockets: 9999 }
+        });
+        
+        expect(form).to.have.been.calledOnce;
+        expect(form).to.have.been.calledWith({ value: 'Hello world' });
+        
+        done();
+      });
+    });
+    
+  }); // #set
+  
   describe('#mkdir', function () {
     var request = {
       put: function(){}
@@ -379,39 +428,6 @@ describe('Client', function () {
   });
 
   describe('#setValue', function () {
-    var clientInstance = new Client();
-    it('should be a function', function () {
-      expect(clientInstance.setValue).to.be.a('function');
-    });
-
-    describe('correctly setting value', function () {
-      var request = {};
-      var result = {};
-      var opts;
-      result.form = function (options) {
-        opts = options;
-      }
-      request.put = function(url, cb) {
-        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{}');
-        });
-        return result;
-      };
-
-      before(function (done) {
-        var client = $require(clientPath, {'request': request});
-        var myClient = new client();
-        myClient.setValue('/welcome/to/the/party', 'weew', function (err) {
-          if (err) { return done(err); }
-          return done();
-        });
-      });
-
-      it('should set the value', function () {
-        expect(opts.value).to.equal('weew');
-      });
-    });
 
     describe('error at request level', function () {
       var request = {};
