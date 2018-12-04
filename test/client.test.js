@@ -18,7 +18,7 @@ describe('Client', function () {
     
     it('should be a function', function () {
       var client = new Client();
-      expect(client.setValue).to.be.a('function');
+      expect(client.set).to.be.a('function');
     });
     
     it('should set value', function(done) {
@@ -42,7 +42,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.setValue('/message', 'Hello world', function (err, res) {
+      client.set('/message', 'Hello world', function (err, res) {
         if (err) { return done(err); }
         
         expect(request.put).to.have.been.calledOnce;
