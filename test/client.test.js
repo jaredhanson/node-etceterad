@@ -11,6 +11,55 @@ describe('Client', function () {
     expect(Client).to.be.a('function');
   });
   
+  describe('#mkdir', function () {
+    var request = {
+      put: function(){}
+    };
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.setPath).to.be.a('function');
+    });
+    
+    it('should create directory', function(done) {
+      var form = sinon.spy();
+      sinon.stub(request, 'put').callsFake(function(options, cb) {
+        process.nextTick(function() {
+          return cb(null, {}, JSON.stringify({
+            action: 'set',
+            node: {
+              key: '/dir',
+              dir: true,
+              modifiedIndex: 30,
+              createdIndex: 30
+            }
+          }));
+        });
+        
+        return { form: form };
+      });
+      
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.setPath('/dir', function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request.put).to.have.been.calledOnce;
+        expect(request.put).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/dir',
+          pool: { maxSockets: 9999 }
+        });
+        
+        expect(form).to.have.been.calledOnce;
+        expect(form).to.have.been.calledWith({ dir: true });
+        
+        done();
+      });
+    });
+    
+  }); // #mkdir
+  
   describe('#readdir', function () {
     
     it('should be a function', function () {
@@ -64,37 +113,6 @@ describe('Client', function () {
     var clientInstance = new Client();
     it('should be a function', function () {
       expect(clientInstance.setPath).to.be.a('function');
-    });
-
-    describe('correctly setting path', function () {
-      var request = {};
-      var result = {};
-      var opts;
-      result.form = function (options) {
-        opts = options;
-      }
-      request.put = function(url, cb) {
-        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{}');
-        });
-        return result;
-      };
-
-      before(function (done) {
-        var client = $require(clientPath, {'request': request});
-        var myClient = new client();
-        myClient.setPath('/welcome/to/the/party', function (err) {
-          if (err) { return done(err); }
-          return done();
-        });
-      });
-
-      it('should receive options', function () {
-        expect(opts).to.not.undefined;
-        expect(Object.keys(opts).length).to.equal(1);
-        expect(opts.dir).to.be.true;
-      });
     });
 
     describe('error at request level', function () {
@@ -162,45 +180,6 @@ describe('Client', function () {
   });
 
   describe('#getPath', function () {
-    var clientInstance = new Client();
-    it('should be a function', function () {
-      expect(clientInstance.getPath).to.be.a('function');
-    });
-
-    describe('correctly getting path', function () {
-      var result = {};
-      var opts;
-      result.form = function (options) {
-        opts = options;
-      };
-
-      var request = function(url, cb) {
-        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
-        });
-        return result;
-      };
-
-      var response;
-      before(function (done) {
-        var client = $require(clientPath, {'request': request});
-        var myClient = new client();
-        myClient.getPath('/welcome/to/the/party', function (err, res) {
-          if (err) { return done(err); }
-          response = res;
-          return done();
-        });
-      });
-
-      it('should not receive options', function () {
-        expect(opts).to.be.undefined;
-      });
-
-      it('should return path', function () {
-        expect(response[0]).to.be.equal('wow');
-      });
-    });
     
     describe('error at request level', function () {
       var result = {};
