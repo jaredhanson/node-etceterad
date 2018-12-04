@@ -21,33 +21,38 @@ describe('Client', function () {
       var client = new Client();
       expect(1).to.equal(1);
       
-      var request = sinon.stub().yields(null, {}, {
+      var request = sinon.stub().yields(null, {}, JSON.stringify({
         action: 'get',
         node: {
-          key: '/wow',
           dir: true,
           nodes: [ {
-            key: 'wow',
-            value: 'niceone'
+            key: '/foo',
+            value: 'two',
+            modifiedIndex: 4,
+            createdIndex: 4
+          }, {
+            key: '/foo_bar',
+            dir: true,
+            modifiedIndex: 5,
+            createdIndex: 5
           } ],
-          modifiedIndex: 2,
-          createdIndex: 2
         }
-      });
+      }));
       
       var client = $require(clientPath, {'request': request});
       var myClient = new client();
-      myClient.getPath('/welcome/to/the/party', function (err, res) {
+      myClient.getPath('/', function (err, res) {
         if (err) { return done(err); }
         
         expect(request).to.have.been.calledOnce;
         expect(request).to.have.been.calledWith({
-          url: 'http://localhost:4001/v2/keys/welcome/to/the/party',
-          json: true,
+          url: 'http://localhost:4001/v2/keys/',
           pool: { maxSockets: 9999 }
         });
         
-        expect(res[0]).to.be.equal('wow');
+        expect(res).to.have.length(2);
+        expect(res[0]).to.be.equal('/foo');
+        expect(res[1]).to.be.equal('/foo_bar');
         
         done();
       });
