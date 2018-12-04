@@ -18,7 +18,7 @@ describe('Client', function () {
     
     it('should be a function', function () {
       var client = new Client();
-      expect(client.setPath).to.be.a('function');
+      expect(client.mkdir).to.be.a('function');
     });
     
     it('should create directory', function(done) {
@@ -42,7 +42,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.setPath('/dir', function (err, res) {
+      client.mkdir('/dir', function (err, res) {
         if (err) { return done(err); }
         
         expect(request.put).to.have.been.calledOnce;
