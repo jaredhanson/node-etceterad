@@ -84,7 +84,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.setTTL('/foo', 'bar', 5, function (err, res) {
+      client.set('/foo', 'bar', { ttl: 5 }, function (err, res) {
         if (err) { return done(err); }
         
         expect(request.put).to.have.been.calledOnce;
