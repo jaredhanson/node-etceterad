@@ -1,8 +1,9 @@
-var CLIENT_PATH = '../../lib/client';
+var MODULE_PATH = '../lib/client';
 
-var sinon = require('sinon')
-  , Client = require('../lib/client')
-  , clientPath = '../../lib/client';
+var $require = require('proxyquire')
+  , sinon = require('sinon')
+  , Client = require(MODULE_PATH);
+  
   
 describe('Client', function () {
   
@@ -17,10 +18,7 @@ describe('Client', function () {
       expect(client.getPath).to.be.a('function');
     });
     
-    it('should do something', function(done) {
-      var client = new Client();
-      expect(1).to.equal(1);
-      
+    it('should list directory', function(done) {
       var request = sinon.stub().yields(null, {}, JSON.stringify({
         action: 'get',
         node: {
@@ -39,9 +37,9 @@ describe('Client', function () {
         }
       }));
       
-      var client = $require(clientPath, {'request': request});
-      var myClient = new client();
-      myClient.getPath('/', function (err, res) {
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.getPath('/', function (err, res) {
         if (err) { return done(err); }
         
         expect(request).to.have.been.calledOnce;
@@ -57,43 +55,6 @@ describe('Client', function () {
         done();
       });
     });
-    
-    /*
-    describe('correctly getting path', function () {
-      var result = {};
-      var opts;
-      result.form = function (options) {
-        opts = options;
-      };
-
-      var request = function(options, cb) {
-        //expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
-        });
-        return result;
-      };
-
-      var response;
-      before(function (done) {
-        var client = $require(clientPath, {'request': request});
-        var myClient = new client();
-        myClient.getPath('/welcome/to/the/party', function (err, res) {
-          if (err) { return done(err); }
-          response = res;
-          return done();
-        });
-      });
-
-      it('should not receive options', function () {
-        expect(opts).to.be.undefined;
-      });
-
-      it('should return path', function () {
-        expect(response[0]).to.be.equal('wow');
-      });
-    });
-    */
     
   });
   
