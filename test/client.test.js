@@ -11,11 +11,11 @@ describe('Client', function () {
     expect(Client).to.be.a('function');
   });
   
-  describe('#getPath', function () {
+  describe('#readdir', function () {
     
     it('should be a function', function () {
       var client = new Client();
-      expect(client.getPath).to.be.a('function');
+      expect(client.readdir).to.be.a('function');
     });
     
     it('should list directory', function(done) {
@@ -39,7 +39,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.getPath('/', function (err, res) {
+      client.readdir('/', function (err, res) {
         if (err) { return done(err); }
         
         expect(request).to.have.been.calledOnce;
@@ -56,7 +56,7 @@ describe('Client', function () {
       });
     });
     
-  });
+  }); // #readdir
   
 
   /*
