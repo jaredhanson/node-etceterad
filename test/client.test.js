@@ -16,6 +16,11 @@ describe('Client', function () {
       put: function(){}
     };
     
+    afterEach(function() {
+      request.put.restore && request.put.restore();
+    })
+    
+    
     it('should be a function', function () {
       var client = new Client();
       expect(client.set).to.be.a('function');
@@ -53,6 +58,43 @@ describe('Client', function () {
         
         expect(form).to.have.been.calledOnce;
         expect(form).to.have.been.calledWith({ value: 'Hello world' });
+        
+        done();
+      });
+    });
+    
+    it('should set value with TTL', function(done) {
+      var form = sinon.spy();
+      sinon.stub(request, 'put').callsFake(function(options, cb) {
+        process.nextTick(function() {
+          return cb(null, {}, JSON.stringify({
+            action: 'set',
+            node: {
+              key: '/message',
+              value: 'Hello world',
+              modifiedIndex: 2,
+              createdIndex: 2
+            }
+          }));
+        });
+        
+        return { form: form };
+      });
+      
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.setTTL('/foo', 'bar', 5, function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request.put).to.have.been.calledOnce;
+        expect(request.put).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/foo',
+          pool: { maxSockets: 9999 }
+        });
+        
+        expect(form).to.have.been.calledOnce;
+        expect(form).to.have.been.calledWith({ value: 'bar', ttl: 5 });
         
         done();
       });
