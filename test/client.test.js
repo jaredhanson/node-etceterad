@@ -60,6 +60,43 @@ describe('Client', function () {
     
   }); // #set
   
+  describe('#get', function () {
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.getValue).to.be.a('function');
+    });
+    
+    it('should get value', function(done) {
+      var request = sinon.stub().yields(null, {}, JSON.stringify({
+        action: 'get',
+        node: {
+          key: '/message',
+          value: 'Hello world',
+          modifiedIndex: 2,
+          createdIndex: 2
+        }
+      }));
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.getValue('/message', function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request).to.have.been.calledOnce;
+        expect(request).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/message',
+          pool: { maxSockets: 9999 }
+        });
+        
+        expect(res).to.equal('Hello world');
+        
+        done();
+      });
+    });
+    
+  }); // #get
+  
   describe('#mkdir', function () {
     var request = {
       put: function(){}
@@ -497,39 +534,6 @@ describe('Client', function () {
   });
 
   describe('#getValue', function () {
-    var clientInstance = new Client();
-    it('should be a function', function () {
-      expect(clientInstance.getValue).to.be.a('function');
-    });
-
-    describe('correctly getting value', function () {
-      var result = {};
-      var opts;
-      result.form = function (options) {
-        opts = options;
-      }
-      var request = function(url, cb) {
-        expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{"node": {"key": "party", "value": "good one"}}');
-        });
-        return result;
-      };
-      var response;
-      before(function (done) {
-        var client = $require(clientPath, {'request': request});
-        var myClient = new client();
-        myClient.getValue('/welcome/to/the/party', function (err, res) {
-          if (err) { return done(err); }
-          response = res;
-          return done();
-        });
-      });
-
-      it('should return the value', function () {
-        expect(response).to.be.equal('good one');
-      });
-    });
 
     describe('error at request level', function () {
       var result = {};
