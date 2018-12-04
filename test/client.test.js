@@ -288,6 +288,55 @@ describe('Client', function () {
     
   }); // #readdir
   
+  describe('#rmdir', function () {
+    var request = {
+      del: function(){}
+    };
+    
+    afterEach(function() {
+      request.del.restore && request.del.restore();
+    });
+    
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.delete).to.be.a('function');
+    });
+    
+    it('should delete directory', function(done) {
+      sinon.stub(request, 'del').yields(null, {}, JSON.stringify({
+        action: 'delete',
+        node: {
+          key: '/foo_dir',
+          dir: true,
+          modifiedIndex: 31,
+          createdIndex: 30
+        },
+        prevNode: {
+          key: '/foo_dir',
+          dir: true,
+          modifiedIndex: 30,
+          createdIndex: 30
+        }
+      }));
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.deletePath('/foo_dir', function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request.del).to.have.been.calledOnce;
+        expect(request.del).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/foo_dir?dir=true',
+          pool: { maxSockets: 9999 }
+        });
+        
+        done();
+      });
+    });
+    
+  }); // #rmdir
+  
 
   /*
   describe('#setPath', function () {
