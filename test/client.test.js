@@ -151,7 +151,7 @@ describe('Client', function () {
     
     it('should be a function', function () {
       var client = new Client();
-      expect(client.deleteValue).to.be.a('function');
+      expect(client.delete).to.be.a('function');
     });
     
     it('should delete key', function(done) {
@@ -172,7 +172,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.deleteValue('/message', function (err, res) {
+      client.delete('/message', function (err, res) {
         if (err) { return done(err); }
         
         expect(request.del).to.have.been.calledOnce;
