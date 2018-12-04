@@ -18,7 +18,7 @@ describe('Client', function () {
     
     afterEach(function() {
       request.put.restore && request.put.restore();
-    })
+    });
     
     
     it('should be a function', function () {
@@ -139,10 +139,63 @@ describe('Client', function () {
     
   }); // #get
   
+  describe('#delete', function () {
+    var request = {
+      del: function(){}
+    };
+    
+    afterEach(function() {
+      request.del.restore && request.del.restore();
+    });
+    
+    
+    it('should be a function', function () {
+      var client = new Client();
+      expect(client.deleteValue).to.be.a('function');
+    });
+    
+    it('should delete key', function(done) {
+      sinon.stub(request, 'del').yields(null, {}, JSON.stringify({
+        action: 'delete',
+        node: {
+          key: '/message',
+          modifiedIndex: 4,
+          createdIndex: 3
+        },
+        prevNode: {
+          key: '/message',
+          value: 'Hello etcd',
+          modifiedIndex: 3,
+          createdIndex: 3
+        }
+      }));
+      
+      var Client = $require(MODULE_PATH, { 'request': request });
+      var client = new Client();
+      client.deleteValue('/message', function (err, res) {
+        if (err) { return done(err); }
+        
+        expect(request.del).to.have.been.calledOnce;
+        expect(request.del).to.have.been.calledWith({
+          url: 'http://localhost:4001/v2/keys/message',
+          pool: { maxSockets: 9999 }
+        });
+        
+        done();
+      });
+    });
+    
+  }); // #delete
+  
   describe('#mkdir', function () {
     var request = {
       put: function(){}
     };
+    
+    afterEach(function() {
+      request.put.restore && request.put.restore();
+    });
+    
     
     it('should be a function', function () {
       var client = new Client();
