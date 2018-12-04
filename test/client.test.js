@@ -300,7 +300,7 @@ describe('Client', function () {
     
     it('should be a function', function () {
       var client = new Client();
-      expect(client.delete).to.be.a('function');
+      expect(client.rmdir).to.be.a('function');
     });
     
     it('should delete directory', function(done) {
@@ -322,7 +322,7 @@ describe('Client', function () {
       
       var Client = $require(MODULE_PATH, { 'request': request });
       var client = new Client();
-      client.deletePath('/foo_dir', function (err, res) {
+      client.rmdir('/foo_dir', function (err, res) {
         if (err) { return done(err); }
         
         expect(request.del).to.have.been.calledOnce;
