@@ -21,23 +21,24 @@ describe('Client', function () {
       var client = new Client();
       expect(1).to.equal(1);
       
-      var request = sinon.stub().yields(null, {}, JSON.parse('{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}'));
-      
-      /*
-      var request = function(options, cb) {
-        //expect(url).to.be.equal('http://localhost:4001/v2/keys/welcome/to/the/party');
-        process.nextTick(function() {
-          return cb(null, {}, '{"node": {"dir": true, "nodes": [{"key": "wow", "value": "niceone"}]}}');
-        });
-      };
-      */
+      var request = sinon.stub().yields(null, {}, {
+        action: 'get',
+        node: {
+          key: '/wow',
+          dir: true,
+          nodes: [ {
+            key: 'wow',
+            value: 'niceone'
+          } ],
+          modifiedIndex: 2,
+          createdIndex: 2
+        }
+      });
       
       var client = $require(clientPath, {'request': request});
       var myClient = new client();
       myClient.getPath('/welcome/to/the/party', function (err, res) {
         if (err) { return done(err); }
-        response = res;
-        
         
         expect(request).to.have.been.calledOnce;
         expect(request).to.have.been.calledWith({
@@ -46,13 +47,10 @@ describe('Client', function () {
           pool: { maxSockets: 9999 }
         });
         
-        expect(response[0]).to.be.equal('wow');
+        expect(res[0]).to.be.equal('wow');
         
-        return done();
+        done();
       });
-      
-      
-      //done();
     });
     
     /*
