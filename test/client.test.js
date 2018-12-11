@@ -7,7 +7,7 @@ var $require = require('proxyquire')
   
 describe('Client', function () {
   
-  it('should export a constructor', function () {
+  it('should export constructor', function () {
     expect(Client).to.be.a('function');
   });
   
